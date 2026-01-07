@@ -17,13 +17,17 @@ import { config } from "./config.js";
  * - A2A MCP for partner communication
  */
 export class IntelligentTreasuryExecutor implements AgentExecutor {
+  private getTimestamp(): string {
+    return new Date().toISOString();
+  }
+
   async execute(requestContext: RequestContext, eventBus: ExecutionEventBus) {
     const messageText = requestContext.userMessage.parts
       .filter((p) => p.kind === "text")
       .map((p) => (p as any).text)
       .join(" ");
 
-    console.log(`\n📨 Received message from partner agent:`);
+    console.log(`\n[${this.getTimestamp()}] 📨 Received message from partner agent:`);
     console.log(`   Message: "${messageText}"`);
     console.log(`   Context ID: ${requestContext.contextId}`);
     console.log(`   Task ID: ${requestContext.taskId}`);
@@ -113,20 +117,20 @@ Respond professionally and execute any required operations autonomously.
             .join("");
 
           if (text) {
-            console.log(`💭 US Agent: ${text}...`);
+            console.log(`[${this.getTimestamp()}] 💭 US Agent: ${text}...`);
           }
         }
 
         if (message.type === "result") {
           if (message.subtype === "success") {
             finalResult = message.result;
-            console.log(`✅ US Agent completed successfully`);
+            console.log(`[${this.getTimestamp()}] ✅ US Agent completed successfully`);
             console.log(`   Result: ${finalResult}...`);
           } else {
             finalResult = `Error processing request: ${message.errors?.join(
               ", "
             )}`;
-            console.error(`❌ US Agent failed: ${finalResult}`);
+            console.error(`[${this.getTimestamp()}] ❌ US Agent failed: ${finalResult}`);
           }
         }
       }
@@ -145,7 +149,7 @@ Respond professionally and execute any required operations autonomously.
         contextId: requestContext.contextId,
       });
     } catch (error: any) {
-      console.error(`❌ Error processing message:`, error);
+      console.error(`[${this.getTimestamp()}] ❌ Error processing message:`, error);
 
       eventBus.publish({
         kind: "message",
@@ -165,6 +169,6 @@ Respond professionally and execute any required operations autonomously.
   }
 
   async cancelTask(): Promise<void> {
-    console.log("⚠️  Task cancellation requested");
+    console.log(`[${this.getTimestamp()}] ⚠️  Task cancellation requested`);
   }
 }
