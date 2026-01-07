@@ -133,6 +133,14 @@ Respond professionally and execute any required operations autonomously.
             // console.log(`[${this.getTimestamp()}] 💭 UK Agent: ${text.substring(0, 100)}...`);
             console.log(`[${this.getTimestamp()}] 💭 UK Agent: ${text}`);
           }
+
+          // Log MCP tool interactions
+          const toolUses = message.message.content.filter((c: any) => c.type === "tool_use");
+          for (const toolUse of toolUses) {
+            console.log(`[${this.getTimestamp()}] 🔧 UK Agent Tool Use: ${toolUse.name}`);
+            console.log(`   Tool ID: ${toolUse.id}`);
+            console.log(`   Input: ${JSON.stringify(toolUse.input, null, 2)}`);
+          }
         }
 
         if (message.type === "result") {
