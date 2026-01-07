@@ -19,6 +19,13 @@
         "PARTNER_HEDERA_ACCOUNT_ID": "${UK_PARTNER_HEDERA_ACCOUNT_ID}",
         "MESSAGES_DIR": "./messages/inbox"
       }
+    },
+    "arp": {
+      "command": "node",
+      "args": ["../../packages/mcp-arp/dist/index.js"],
+      "env": {
+        "ARP_DATA_DIR": "${UK_ARP_DATA_DIR}"
+      }
     }
   }
 }

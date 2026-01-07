@@ -1,0 +1,93 @@
+{
+  "startDate": "2026-01-08",
+  "endDate": "2026-02-07",
+  "currentBalance": 350,
+  "entries": [
+    {
+      "date": "2026-01-10",
+      "projectedInflows": 60,
+      "projectedOutflows": 0,
+      "netCashflow": 60,
+      "runningBalance": 410
+    },
+    {
+      "date": "2026-01-14",
+      "projectedInflows": 85,
+      "projectedOutflows": 0,
+      "netCashflow": 85,
+      "runningBalance": 495
+    },
+    {
+      "date": "2026-01-28",
+      "projectedInflows": 70,
+      "projectedOutflows": 0,
+      "netCashflow": 70,
+      "runningBalance": 565
+    },
+    {
+      "date": "2026-01-31",
+      "projectedInflows": 0,
+      "projectedOutflows": 55,
+      "netCashflow": -55,
+      "runningBalance": 510
+    },
+    {
+      "date": "2026-02-09",
+      "projectedInflows": 0,
+      "projectedOutflows": 75,
+      "netCashflow": -75,
+      "runningBalance": 435
+    },
+    {
+      "date": "2026-02-14",
+      "projectedInflows": 85,
+      "projectedOutflows": 0,
+      "netCashflow": 85,
+      "runningBalance": 520
+    },
+    {
+      "date": "2026-02-15",
+      "projectedInflows": 0,
+      "projectedOutflows": 115,
+      "netCashflow": -115,
+      "runningBalance": 405
+    },
+    {
+      "date": "2026-02-16",
+      "projectedInflows": 0,
+      "projectedOutflows": 35,
+      "netCashflow": -35,
+      "runningBalance": 370
+    },
+    {
+      "date": "2026-02-18",
+      "projectedInflows": 150,
+      "projectedOutflows": 0,
+      "netCashflow": 150,
+      "runningBalance": 520
+    },
+    {
+      "date": "2026-02-20",
+      "projectedInflows": 0,
+      "projectedOutflows": 95,
+      "netCashflow": -95,
+      "runningBalance": 425
+    },
+    {
+      "date": "2026-02-22",
+      "projectedInflows": 110,
+      "projectedOutflows": 0,
+      "netCashflow": 110,
+      "runningBalance": 535
+    },
+    {
+      "date": "2026-02-25",
+      "projectedInflows": 0,
+      "projectedOutflows": 25,
+      "netCashflow": -25,
+      "runningBalance": 510
+    }
+  ],
+  "minimumProjectedBalance": 370,
+  "minimumBalanceDate": "2026-02-16"
+}

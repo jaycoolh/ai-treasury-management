@@ -1,0 +1,52 @@
+[
+  {
+    "invoiceId": "AR-UK-001",
+    "customer": "Acme Corp UK",
+    "amount": 120,
+    "dueDate": "2026-02-15",
+    "issuedDate": "2026-01-15",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Q1 Software License Renewal"
+  },
+  {
+    "invoiceId": "AR-UK-002",
+    "customer": "British Manufacturing Ltd",
+    "amount": 85,
+    "dueDate": "2026-02-20",
+    "issuedDate": "2026-01-20",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Consulting Services - January"
+  },
+  {
+    "invoiceId": "AR-UK-003",
+    "customer": "Thames Trading Co",
+    "amount": 65,
+    "dueDate": "2026-01-25",
+    "issuedDate": "2025-12-25",
+    "status": "outstanding",
+    "agingBucket": "30",
+    "description": "Product Delivery - December"
+  },
+  {
+    "invoiceId": "AR-UK-004",
+    "customer": "London Tech Solutions",
+    "amount": 55,
+    "dueDate": "2026-02-10",
+    "issuedDate": "2026-01-10",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Support Contract Q1"
+  },
+  {
+    "invoiceId": "AR-UK-005",
+    "customer": "Windsor Enterprises",
+    "amount": 40,
+    "dueDate": "2025-12-15",
+    "issuedDate": "2025-11-15",
+    "status": "overdue",
+    "agingBucket": "60",
+    "description": "Professional Services - November"
+  }
+]

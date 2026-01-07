@@ -1,0 +1,52 @@
+[
+  {
+    "invoiceId": "AP-UK-001",
+    "vendor": "Cloud Services Ltd",
+    "amount": 90,
+    "dueDate": "2026-02-12",
+    "receivedDate": "2026-01-12",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "AWS Infrastructure - January"
+  },
+  {
+    "invoiceId": "AP-UK-002",
+    "vendor": "Office Supplies Co",
+    "amount": 25,
+    "dueDate": "2026-02-18",
+    "receivedDate": "2026-01-18",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Office Equipment & Supplies"
+  },
+  {
+    "invoiceId": "AP-UK-003",
+    "vendor": "Legal Partners LLP",
+    "amount": 110,
+    "dueDate": "2026-02-08",
+    "receivedDate": "2026-01-08",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Legal Consultation Q1"
+  },
+  {
+    "invoiceId": "AP-UK-004",
+    "vendor": "Marketing Agency UK",
+    "amount": 55,
+    "dueDate": "2026-01-30",
+    "receivedDate": "2025-12-30",
+    "status": "outstanding",
+    "agingBucket": "30",
+    "description": "Marketing Campaign - December"
+  },
+  {
+    "invoiceId": "AP-UK-005",
+    "vendor": "Facilities Management",
+    "amount": 20,
+    "dueDate": "2026-02-25",
+    "receivedDate": "2026-01-25",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Building Maintenance - January"
+  }
+]

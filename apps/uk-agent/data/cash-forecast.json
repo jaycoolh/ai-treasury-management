@@ -1,0 +1,86 @@
+{
+  "startDate": "2026-01-08",
+  "endDate": "2026-02-07",
+  "currentBalance": 250,
+  "entries": [
+    {
+      "date": "2026-01-10",
+      "projectedInflows": 0,
+      "projectedOutflows": 0,
+      "netCashflow": 0,
+      "runningBalance": 250
+    },
+    {
+      "date": "2026-01-15",
+      "projectedInflows": 0,
+      "projectedOutflows": 0,
+      "netCashflow": 0,
+      "runningBalance": 250
+    },
+    {
+      "date": "2026-01-25",
+      "projectedInflows": 65,
+      "projectedOutflows": 0,
+      "netCashflow": 65,
+      "runningBalance": 315
+    },
+    {
+      "date": "2026-01-30",
+      "projectedInflows": 0,
+      "projectedOutflows": 55,
+      "netCashflow": -55,
+      "runningBalance": 260
+    },
+    {
+      "date": "2026-02-08",
+      "projectedInflows": 0,
+      "projectedOutflows": 110,
+      "netCashflow": -110,
+      "runningBalance": 150
+    },
+    {
+      "date": "2026-02-10",
+      "projectedInflows": 55,
+      "projectedOutflows": 0,
+      "netCashflow": 55,
+      "runningBalance": 205
+    },
+    {
+      "date": "2026-02-12",
+      "projectedInflows": 0,
+      "projectedOutflows": 90,
+      "netCashflow": -90,
+      "runningBalance": 115
+    },
+    {
+      "date": "2026-02-15",
+      "projectedInflows": 120,
+      "projectedOutflows": 0,
+      "netCashflow": 120,
+      "runningBalance": 235
+    },
+    {
+      "date": "2026-02-18",
+      "projectedInflows": 0,
+      "projectedOutflows": 25,
+      "netCashflow": -25,
+      "runningBalance": 210
+    },
+    {
+      "date": "2026-02-20",
+      "projectedInflows": 85,
+      "projectedOutflows": 0,
+      "netCashflow": 85,
+      "runningBalance": 295
+    },
+    {
+      "date": "2026-02-25",
+      "projectedInflows": 0,
+      "projectedOutflows": 20,
+      "netCashflow": -20,
+      "runningBalance": 275
+    }
+  ],
+  "minimumProjectedBalance": 115,
+  "minimumBalanceDate": "2026-02-12"
+}

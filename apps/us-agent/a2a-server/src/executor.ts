@@ -33,7 +33,7 @@ export class IntelligentTreasuryExecutor implements AgentExecutor {
       const agentSession = query({
         prompt: `You are the US Treasury Agent operating autonomously.
 
-You received this message from the UK Treasury Agent:
+You received this message from the US Treasury Agent:
 
 "${messageText}"
 
@@ -45,7 +45,7 @@ Process this message according to US treasury protocols:
 
 Use your treasury-management skill for workflow guidance.
 
-Generate a clear, professional response to send back to the UK agent.`,
+Generate a clear, professional response to send back to the US agent.`,
         options: {
           allowedTools: [],
           mcpServers: {
@@ -70,11 +70,8 @@ Generate a clear, professional response to send back to the UK agent.`,
             },
           },
           settingSources: ["project"], // Load Skills from .claude/skills/
-          systemPrompt: {
-            type: "preset",
-            preset: "claude_code",
-            append: `
-You are the US Treasury Agent processing an incoming A2A message from the UK Treasury Agent.
+          systemPrompt: `
+You are the US Treasury Agent processing an incoming A2A message from the US Treasury Agent.
 
 Key context:
 - Your entity: United States business
@@ -84,7 +81,21 @@ Key context:
 
 Respond professionally and execute any required operations autonomously.
 `,
-          },
+          //           systemPrompt: {
+          //             type: "preset",
+          //             preset: "claude_code",
+          //             append: `
+          // You are the US Treasury Agent processing an incoming A2A message from the US Treasury Agent.
+
+          // Key context:
+          // - Your entity: United States business
+          // - Your Hedera Account: ${config.hederaAccountId}
+          // - Partner: United States business
+          // - Network: ${config.hederaNetwork}
+
+          // Respond professionally and execute any required operations autonomously.
+          // `,
+          //           },
           permissionMode: "bypassPermissions", // Autonomous operation
           allowDangerouslySkipPermissions: true,
         },
@@ -102,7 +113,7 @@ Respond professionally and execute any required operations autonomously.
             .join("");
 
           if (text) {
-            console.log(`💭 US Agent: ${text.substring(0, 100)}...`);
+            console.log(`💭 US Agent: ${text}...`);
           }
         }
 
@@ -110,7 +121,7 @@ Respond professionally and execute any required operations autonomously.
           if (message.subtype === "success") {
             finalResult = message.result;
             console.log(`✅ US Agent completed successfully`);
-            console.log(`   Result: ${finalResult.substring(0, 150)}...`);
+            console.log(`   Result: ${finalResult}...`);
           } else {
             finalResult = `Error processing request: ${message.errors?.join(
               ", "

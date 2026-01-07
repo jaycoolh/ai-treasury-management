@@ -1,0 +1,62 @@
+[
+  {
+    "invoiceId": "AR-US-001",
+    "customer": "TechCorp America",
+    "amount": 150,
+    "dueDate": "2026-02-18",
+    "issuedDate": "2026-01-18",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Enterprise Software License Q1"
+  },
+  {
+    "invoiceId": "AR-US-002",
+    "customer": "Silicon Valley Innovations",
+    "amount": 110,
+    "dueDate": "2026-02-22",
+    "issuedDate": "2026-01-22",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Consulting Services - January"
+  },
+  {
+    "invoiceId": "AR-US-003",
+    "customer": "East Coast Distributors",
+    "amount": 85,
+    "dueDate": "2026-02-14",
+    "issuedDate": "2026-01-14",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Product Sales Q1"
+  },
+  {
+    "invoiceId": "AR-US-004",
+    "customer": "Midwest Manufacturing",
+    "amount": 70,
+    "dueDate": "2026-01-28",
+    "issuedDate": "2025-12-28",
+    "status": "outstanding",
+    "agingBucket": "30",
+    "description": "Custom Development - December"
+  },
+  {
+    "invoiceId": "AR-US-005",
+    "customer": "Pacific Solutions Inc",
+    "amount": 60,
+    "dueDate": "2026-02-10",
+    "issuedDate": "2026-01-10",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Support & Maintenance Q1"
+  },
+  {
+    "invoiceId": "AR-US-006",
+    "customer": "Rocky Mountain Partners",
+    "amount": 45,
+    "dueDate": "2025-12-20",
+    "issuedDate": "2025-11-20",
+    "status": "overdue",
+    "agingBucket": "60",
+    "description": "Professional Services - November"
+  }
+]

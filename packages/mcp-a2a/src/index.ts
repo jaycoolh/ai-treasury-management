@@ -260,6 +260,88 @@ server.registerResource(
   }
 );
 
+// Register a resource to expose conversation history
+server.registerResource(
+  "conversation-history",
+  "a2a://conversation/history",
+  {
+    description: "Historical conversation messages with partner agent (last 50 messages)",
+    mimeType: "application/json",
+  },
+  async (): Promise<ReadResourceResult> => {
+    try {
+      const archiveDir = path.join(path.dirname(MESSAGES_DIR), "archive");
+
+      if (!fs.existsSync(archiveDir)) {
+        return {
+          contents: [
+            {
+              uri: "a2a://conversation/history",
+              text: JSON.stringify(
+                {
+                  messages: [],
+                  count: 0,
+                  note: "No archived messages found",
+                },
+                null,
+                2
+              ),
+            },
+          ],
+        };
+      }
+
+      // Read all archived message files
+      const files = fs
+        .readdirSync(archiveDir)
+        .filter((f) => f.endsWith(".json"))
+        .sort()
+        .reverse() // Most recent first
+        .slice(0, 50); // Limit to last 50 messages
+
+      const messages: A2AMessage[] = files.map((file) => {
+        const content = fs.readFileSync(path.join(archiveDir, file), "utf-8");
+        return JSON.parse(content);
+      });
+
+      return {
+        contents: [
+          {
+            uri: "a2a://conversation/history",
+            text: JSON.stringify(
+              {
+                messages,
+                count: messages.length,
+                note: messages.length === 50 ? "Showing last 50 messages" : `Showing all ${messages.length} archived messages`,
+              },
+              null,
+              2
+            ),
+          },
+        ],
+      };
+    } catch (error: any) {
+      console.error(`❌ Error reading conversation history: ${error.message}`);
+      return {
+        contents: [
+          {
+            uri: "a2a://conversation/history",
+            text: JSON.stringify(
+              {
+                error: error.message,
+                messages: [],
+                count: 0,
+              },
+              null,
+              2
+            ),
+          },
+        ],
+      };
+    }
+  }
+);
+
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);

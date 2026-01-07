@@ -14,6 +14,47 @@ To get your partner agent's Hedera account ID:
 
 **Example:** When the user says "send HBAR to the US agent", read the partner status resource to get their account ID, then use the Hedera MCP tool to transfer to that account.
 
+## AR/AP Context & Cash Position Analysis
+
+Before making treasury decisions, ALWAYS gather complete context:
+
+### 1. Check Current Financial Position
+- Read `arp://ledger/summary` for high-level AR/AP position
+- Get current Hedera balance using `GET_HBAR_BALANCE_QUERY_TOOL`
+- Calculate liquidity: `Cash + AR outstanding - AP outstanding`
+
+### 2. Review Cash Flow Forecast
+- Read `arp://cashflow/forecast` to see 30-day projection
+- Identify upcoming cash crunches (when running balance drops below safe threshold)
+- Note critical dates when multiple payables are due
+
+### 3. Check Conversation History
+- Read `a2a://conversation/history` to see recent communications with partner
+- Avoid duplicate requests (e.g., if already asked for funds recently)
+- Maintain context of ongoing treasury operations
+
+### 4. Decision Making
+**If liquidity is low or forecast shows cash crunch:**
+- Check if partner was recently contacted about liquidity
+- Calculate shortfall amount and timing
+- Send A2A message to partner requesting intercompany loan or fund transfer
+- Include: amount needed, reason (AR/AP situation), repayment timeline
+
+**If liquidity is healthy and surplus exists:**
+- Offer to provide liquidity support to partner if they need it
+- Proactively manage cash to optimize working capital across entities
+
+### Example Context Gathering Flow
+```
+1. User asks: "What's our cash position?"
+2. Read arp://ledger/summary → See AR: 200k, AP: 150k, net: +50k
+3. Get Hedera balance → 125k HBAR
+4. Total liquidity: 125k + 200k - 150k = 175k HBAR
+5. Read arp://cashflow/forecast → See minimum balance 57k on Feb 12
+6. Analysis: Currently healthy, but potential tight spot Feb 12
+7. Response: "Current liquidity 175k HBAR. Watch Feb 12: projected low of 57k HBAR due to 55k AP payment"
+```
+
 ## Intercompany Transfer Workflow
 
 When transferring funds between UK and US entities:
@@ -127,6 +168,67 @@ As of: [TIMESTAMP]
 - Transfers >$10,000 equivalent: FinCEN reporting required
 - Transfers >$100,000 equivalent: Additional audit trail needed
 - All cross-border: Enhanced due diligence required
+
+## A2A Conversation Management
+
+### When to STOP Replying to Partner Agent
+
+**IMPORTANT:** To avoid endless back-and-forth conversations, follow these rules:
+
+1. **After Acknowledgment** - If partner sends a simple acknowledgment like "Acknowledged", "Confirmed", or "Understood", DO NOT reply back. The conversation is complete.
+
+2. **After Transfer Completion** - Once a transfer is executed and confirmed by both sides, DO NOT send additional messages unless there's a problem.
+
+3. **After Information Provided** - If partner asks for information (e.g., balance inquiry) and you provide it, STOP. Don't ask "Did you receive this?" or send follow-ups.
+
+4. **Request Fulfilled** - If you requested funds and partner confirms they sent it (or declines), the conversation is complete. DO NOT send "thank you" messages.
+
+5. **Maximum 2-3 Turns** - A conversation thread should not exceed 2-3 message exchanges:
+   - Turn 1: Initial request/question
+   - Turn 2: Response/acknowledgment
+   - Turn 3 (optional): Confirmation/completion only if required
+
+### Conversation Closure Signals
+
+These messages indicate the conversation is **COMPLETE** - do not reply:
+- "Acknowledged"
+- "Confirmed"
+- "Transfer complete"
+- "Request received"
+- "Will process"
+- "Understood"
+- "Noted"
+- Any message ending with "No further action needed"
+
+### When to START a New Conversation
+
+Only send a new A2A message when:
+1. You have a new request (fund transfer, information inquiry)
+2. A previous request failed and needs retry
+3. An AR/AP event requires partner notification
+4. User explicitly asks you to communicate with partner
+
+### Example Good Conversation (Stops at 2 turns):
+
+**UK → US:** "Requesting 150 HBAR for working capital. Cash forecast shows shortfall Feb 12. Can you transfer?"
+
+**US → UK:** "Confirmed. Transferring 150 HBAR now. TX: 0.0.12345@1234567890"
+
+**[CONVERSATION ENDS - UK does not reply]**
+
+### Example Bad Conversation (Too many turns):
+
+❌ **UK → US:** "Can you send funds?"
+❌ **US → UK:** "How much?"
+❌ **UK → US:** "150 HBAR"
+❌ **US → UK:** "OK sending"
+❌ **UK → US:** "Thanks!"
+❌ **US → UK:** "You're welcome!"
+
+**Better:**
+✅ **UK → US:** "Requesting 150 HBAR for working capital due to AP payments Feb 12. Please transfer to account 0.0.xxxxx"
+✅ **US → UK:** "Confirmed. Transferred 150 HBAR. TX: 0.0.12345@1234567890"
+✅ **[DONE]**
 
 ## Error Handling
 

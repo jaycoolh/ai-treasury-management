@@ -1,0 +1,62 @@
+[
+  {
+    "invoiceId": "AP-US-001",
+    "vendor": "Amazon Web Services",
+    "amount": 115,
+    "dueDate": "2026-02-15",
+    "receivedDate": "2026-01-15",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Cloud Infrastructure - January"
+  },
+  {
+    "invoiceId": "AP-US-002",
+    "vendor": "Salesforce Inc",
+    "amount": 95,
+    "dueDate": "2026-02-20",
+    "receivedDate": "2026-01-20",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "CRM Subscription Q1"
+  },
+  {
+    "invoiceId": "AP-US-003",
+    "vendor": "Morrison & Associates Law",
+    "amount": 75,
+    "dueDate": "2026-02-09",
+    "receivedDate": "2026-01-09",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Legal Services - Q1"
+  },
+  {
+    "invoiceId": "AP-US-004",
+    "vendor": "DataCenter Solutions LLC",
+    "amount": 55,
+    "dueDate": "2026-01-31",
+    "receivedDate": "2026-01-01",
+    "status": "outstanding",
+    "agingBucket": "30",
+    "description": "Colocation Services - January"
+  },
+  {
+    "invoiceId": "AP-US-005",
+    "vendor": "Office Depot",
+    "amount": 25,
+    "dueDate": "2026-02-25",
+    "receivedDate": "2026-01-25",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Office Supplies & Equipment"
+  },
+  {
+    "invoiceId": "AP-US-006",
+    "vendor": "Marketing Pros Agency",
+    "amount": 35,
+    "dueDate": "2026-02-16",
+    "receivedDate": "2026-01-16",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Digital Marketing Campaign"
+  }
+]
