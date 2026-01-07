@@ -5,23 +5,27 @@
 ### Prerequisites
 
 1. **Node.js 18+**
+
    ```bash
    node --version  # Should be 18.x or higher
    ```
 
 2. **pnpm 8+**
+
    ```bash
    npm install -g pnpm
    pnpm --version  # Should be 8.x or higher
    ```
 
 3. **Claude Code CLI**
+
    ```bash
    curl -fsSL https://claude.ai/install.sh | bash
    # Or: brew install --cask claude-code
    ```
 
 4. **Hedera Testnet Accounts**
+
    - Create accounts at [portal.hedera.com](https://portal.hedera.com)
    - Note account IDs and private keys
 
@@ -78,6 +82,7 @@ pnpm run build
 ### Running Agents
 
 **Terminal 1 - UK Agent:**
+
 ```bash
 pnpm start:uk
 # Or for development with hot reload:
@@ -85,6 +90,7 @@ pnpm dev:uk
 ```
 
 **Terminal 2 - US Agent:**
+
 ```bash
 pnpm start:us
 # Or for development:
@@ -94,6 +100,7 @@ pnpm dev:us
 ### Testing Agent Communication
 
 **Terminal 3 - Interact with UK Agent:**
+
 ```bash
 cd apps/uk-agent
 claude
@@ -109,12 +116,14 @@ claude
 ### Adding a New MCP Server
 
 1. **Create package structure:**
+
    ```bash
    mkdir -p packages/mcp-custom/src
    cd packages/mcp-custom
    ```
 
 2. **Create package.json:**
+
    ```json
    {
      "name": "@treasury/mcp-custom",
@@ -129,9 +138,10 @@ claude
    ```
 
 3. **Implement MCP server:**
+
    ```typescript
    // src/index.ts
-   import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+   import { Server } from "@modelcontextprotocol/sdk/server/index.js";
    // ... implement server
    ```
 
@@ -151,11 +161,13 @@ claude
 ### Creating a New Skill
 
 1. **Create skill directory:**
+
    ```bash
    mkdir -p packages/shared-skills/my-skill
    ```
 
 2. **Create SKILL.md:**
+
    ```markdown
    ---
    name: my-skill
@@ -165,6 +177,7 @@ claude
    # My Skill
 
    ## Instructions
+
    Step-by-step guidance for Claude...
    ```
 
@@ -194,6 +207,7 @@ pnpm --filter us-agent build
 ### Manual Testing
 
 **Test A2A Communication:**
+
 ```bash
 # Terminal 1: Start UK agent
 pnpm start:uk
@@ -220,6 +234,7 @@ curl -X POST http://localhost:4000/a2a/jsonrpc \
 ```
 
 **Test Hedera MCP:**
+
 ```bash
 cd apps/uk-agent
 claude
@@ -232,12 +247,14 @@ claude
 ### Debugging
 
 **Enable debug logging:**
+
 ```bash
 # In .env.uk or .env.us
 LOG_LEVEL=debug
 ```
 
 **Check A2A messages:**
+
 ```bash
 # View incoming messages
 ls -la apps/uk-agent/messages/inbox/
@@ -248,6 +265,7 @@ ls -la apps/uk-agent/messages/archive/
 ```
 
 **Monitor A2A server logs:**
+
 ```bash
 # UK server logs will show:
 # - Incoming messages
@@ -265,7 +283,7 @@ ls -la apps/uk-agent/messages/archive/
 pnpm update --recursive --latest
 
 # Update specific package
-pnpm --filter @treasury/mcp-hedera update @hashgraph/sdk
+pnpm --filter @treasury/mcp-hedera update @hiero-ledger/sdk
 ```
 
 ### Add New Agent
@@ -304,10 +322,12 @@ vim apps/uk-agent/.claude/settings.json
 ### MCP Server Not Connecting
 
 **Symptoms:**
+
 - Claude can't see MCP tools
 - "MCP server failed to start" errors
 
 **Solutions:**
+
 ```bash
 # 1. Check MCP server build
 pnpm --filter @treasury/mcp-hedera build
@@ -325,10 +345,12 @@ cat apps/uk-agent/.claude/mcp.json
 ### Skills Not Loading
 
 **Symptoms:**
+
 - Agent doesn't follow compliance rules
 - Skills not appearing in agent context
 
 **Solutions:**
+
 ```bash
 # 1. Check symlinks
 ls -la apps/uk-agent/.claude/skills/
@@ -343,10 +365,12 @@ head -20 packages/shared-skills/treasury-management/SKILL.md
 ### A2A Messages Not Received
 
 **Symptoms:**
+
 - Messages not appearing in inbox
 - Partner agent not responding
 
 **Solutions:**
+
 ```bash
 # 1. Check both agents are running
 curl http://localhost:4000/health
@@ -364,10 +388,12 @@ ls -la apps/uk-agent/messages/inbox/
 ### Hedera Transactions Failing
 
 **Symptoms:**
+
 - "Insufficient balance" errors
 - Transaction timeouts
 
 **Solutions:**
+
 ```bash
 # 1. Check account balance
 # Use Claude: "Check my Hedera balance"
@@ -433,11 +459,13 @@ pnpm run build --workspace-concurrency=4
 ## Contributing
 
 1. **Create feature branch:**
+
    ```bash
    git checkout -b feature/my-feature
    ```
 
 2. **Make changes and test:**
+
    ```bash
    pnpm run build
    pnpm run typecheck
@@ -445,6 +473,7 @@ pnpm run build --workspace-concurrency=4
    ```
 
 3. **Commit and push:**
+
    ```bash
    git add .
    git commit -m "feat: add my feature"

@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
-    "@hashgraph/sdk": "^2.40.0",
+    "@hiero-ledger/sdk": "^2.40.0",
     "colors": "^1.4.0",
     "@treasury/shared-types": "workspace:*"
   },
