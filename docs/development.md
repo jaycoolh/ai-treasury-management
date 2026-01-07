@@ -99,7 +99,7 @@ pnpm dev:us
 
 ### Testing Agent Communication
 
-**Terminal 3 - Interact with UK Agent:**
+**Terminal 3 - Interact with UK Agent via Claude Code CLI:**
 
 ```bash
 cd apps/uk-agent
@@ -206,7 +206,7 @@ pnpm --filter us-agent build
 
 ### Manual Testing
 
-**Test A2A Communication:**
+#### Test A2A Communication via Claude Code CLI
 
 ```bash
 # Terminal 1: Start UK agent
@@ -215,22 +215,89 @@ pnpm start:uk
 # Terminal 2: Start US agent
 pnpm start:us
 
-# Terminal 3: Send test message
+# Terminal 3: Interact with UK agent via CLI
+cd apps/uk-agent
+claude
+
+# In Claude Code, ask the agent to send a message:
+# "Send a message to the US agent saying 'Hello from UK'"
+# "Check for messages from the partner agent"
+```
+
+#### Test A2A Communication via JSON-RPC (Manual)
+
+You can also send messages directly via the A2A JSON-RPC endpoint using curl:
+
+```bash
+# Terminal 1: Start UK agent
+pnpm start:uk
+
+# Terminal 2: Start US agent
+pnpm start:us
+
+# Terminal 3: Send message to UK agent (port 4000) using JSON-RPC
 curl -X POST http://localhost:4000/a2a/jsonrpc \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
-    "method": "sendMessage",
+    "id": 1,
+    "method": "message/send",
     "params": {
       "message": {
-        "messageId": "test-123",
+        "kind": "message",
         "role": "user",
-        "parts": [{"kind": "text", "text": "Test message"}],
-        "kind": "message"
+        "messageId": "test-123",
+        "parts": [
+          {
+            "kind": "text",
+            "text": "Ask the US Agent for 5 HBAR"
+          }
+        ]
       }
-    },
-    "id": 1
+    }
   }'
+```
+
+**Response example:**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "kind": "message",
+    "messageId": "50612a7c-372c-4bc5-a90d-2f1ada072ebd",
+    "role": "agent",
+    "parts": [
+      {
+        "kind": "text",
+        "text": "Message received and processed..."
+      }
+    ],
+    "contextId": "82fafb12-6597-4019-9e23-197f9450bb96"
+  }
+}
+```
+
+**A2A JSON-RPC Specification:**
+
+- **Method:** `message/send`
+- **Required message fields:**
+  - `kind`: "message"
+  - `role`: "user" (for client messages)
+  - `messageId`: unique identifier (any string or UUID)
+  - `parts`: array of message content
+    - `kind`: "text"
+    - `text`: message content string
+
+**Testing both directions:**
+
+```bash
+# Send to UK agent (port 4000)
+curl -X POST http://localhost:4000/a2a/jsonrpc ...
+
+# Send to US agent (port 5001)
+curl -X POST http://localhost:5001/a2a/jsonrpc ...
 ```
 
 **Test Hedera MCP:**
@@ -374,7 +441,7 @@ head -20 packages/shared-skills/treasury-management/SKILL.md
 ```bash
 # 1. Check both agents are running
 curl http://localhost:4000/health
-curl http://localhost:5000/health
+curl http://localhost:5001/health
 
 # 2. Verify partner URLs in env
 grep PARTNER_AGENT_URL apps/uk-agent/.env.uk
@@ -383,6 +450,49 @@ grep PARTNER_AGENT_URL apps/uk-agent/.env.uk
 ls -la apps/uk-agent/messages/inbox/
 
 # 4. Check A2A server logs for errors
+```
+
+### A2A JSON-RPC Error: "Method not found"
+
+**Symptoms:**
+
+- curl returns `{"error": {"code": -32601, "message": "Method not found"}}`
+
+**Solution:**
+
+The correct A2A JSON-RPC method name is `message/send`, not `sendMessage`:
+
+```bash
+# Correct
+curl -X POST http://localhost:4000/a2a/jsonrpc \
+  -d '{"jsonrpc":"2.0","method":"message/send",...}'
+
+# Incorrect - will fail
+curl -X POST http://localhost:4000/a2a/jsonrpc \
+  -d '{"jsonrpc":"2.0","method":"sendMessage",...}'
+```
+
+### A2A JSON-RPC Error: "message.messageId is required"
+
+**Symptoms:**
+
+- curl returns error about missing messageId
+
+**Solution:**
+
+Ensure every message includes a `messageId` field:
+
+```json
+{
+  "params": {
+    "message": {
+      "messageId": "unique-id-here",
+      "kind": "message",
+      "role": "user",
+      "parts": [...]
+    }
+  }
+}
 ```
 
 ### Hedera Transactions Failing

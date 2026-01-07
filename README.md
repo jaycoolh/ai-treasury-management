@@ -231,7 +231,7 @@ Check that:
 
 - Environment variables are set correctly
 - Hedera credentials are valid
-- Ports 4000 and 5000 are not in use
+- Ports 4000 and 5001 are not in use
 - pnpm dependencies are installed
 
 ### MCP server not connecting

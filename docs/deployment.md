@@ -9,14 +9,16 @@ This guide covers deploying the Treasury Agent System from local development to 
 ### Local Development
 
 **Current setup** - Both agents on localhost
+
 - UK Agent: `http://localhost:4000`
-- US Agent: `http://localhost:5000`
+- US Agent: `http://localhost:5001`
 - Network: Hedera testnet
 - Auth: None
 
 ### Staging
 
 **Single-server deployment** for testing
+
 - Both agents on same server, different ports
 - Network: Hedera testnet
 - Auth: API key
@@ -25,6 +27,7 @@ This guide covers deploying the Treasury Agent System from local development to 
 ### Production
 
 **Multi-server deployment**
+
 - UK Agent: `https://uk-treasury.company.com`
 - US Agent: `https://us-treasury.company.com`
 - Network: Hedera mainnet
@@ -66,6 +69,7 @@ ls -la apps/us-agent/a2a-server/dist/
 ### Production Environment Variables
 
 **apps/uk-agent/.env.production**
+
 ```bash
 # UK Agent Production Config
 UK_HEDERA_ACCOUNT_ID=0.0.xxxxxx
@@ -81,11 +85,12 @@ NODE_ENV=production
 ```
 
 **apps/us-agent/.env.production**
+
 ```bash
 # US Agent Production Config
 US_HEDERA_ACCOUNT_ID=0.0.yyyyyy
 US_HEDERA_PRIVATE_KEY=302e...  # From secure key management
-US_A2A_PORT=5000
+US_A2A_PORT=5001
 US_PARTNER_AGENT_URL=https://uk-treasury.company.com
 
 # Shared Config
@@ -117,6 +122,7 @@ aws secretsmanager get-secret-value \
 ### Dockerfile
 
 **apps/uk-agent/Dockerfile**
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -163,8 +169,9 @@ CMD ["node", "a2a-server/dist/index.js"]
 ### Docker Compose
 
 **docker-compose.yml**
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   uk-agent:
@@ -176,7 +183,7 @@ services:
     environment:
       - UK_HEDERA_ACCOUNT_ID=${UK_HEDERA_ACCOUNT_ID}
       - UK_HEDERA_PRIVATE_KEY=${UK_HEDERA_PRIVATE_KEY}
-      - UK_PARTNER_AGENT_URL=http://us-agent:5000
+      - UK_PARTNER_AGENT_URL=http://us-agent:5001
       - HEDERA_NETWORK=mainnet
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - NODE_ENV=production
@@ -191,7 +198,7 @@ services:
       context: .
       dockerfile: apps/us-agent/Dockerfile
     ports:
-      - "5000:5000"
+      - "5001:5001"
     environment:
       - US_HEDERA_ACCOUNT_ID=${US_HEDERA_ACCOUNT_ID}
       - US_HEDERA_PRIVATE_KEY=${US_HEDERA_PRIVATE_KEY}
@@ -268,6 +275,7 @@ docker-compose down
 ### ECS Task Definition
 
 **uk-agent-task.json**
+
 ```json
 {
   "family": "uk-treasury-agent",
@@ -297,7 +305,10 @@ docker-compose down
       ],
       "environment": [
         { "name": "UK_HEDERA_ACCOUNT_ID", "value": "0.0.xxxxxx" },
-        { "name": "UK_PARTNER_AGENT_URL", "value": "https://us-treasury.company.com" },
+        {
+          "name": "UK_PARTNER_AGENT_URL",
+          "value": "https://us-treasury.company.com"
+        },
         { "name": "HEDERA_NETWORK", "value": "mainnet" },
         { "name": "NODE_ENV", "value": "production" }
       ],
@@ -310,7 +321,10 @@ docker-compose down
         }
       },
       "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"],
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:4000/health || exit 1"
+        ],
         "interval": 30,
         "timeout": 5,
         "retries": 3
@@ -377,23 +391,23 @@ server {
 
 ```typescript
 const agentCard = {
-  name: 'UK Treasury Agent',
+  name: "UK Treasury Agent",
   // ... other fields
   securitySchemes: {
     oauth2: {
-      type: 'oauth2',
+      type: "oauth2",
       flows: {
         clientCredentials: {
-          tokenUrl: 'https://auth.company.com/oauth/token',
+          tokenUrl: "https://auth.company.com/oauth/token",
           scopes: {
-            'treasury:read': 'Read treasury data',
-            'treasury:write': 'Execute transfers'
-          }
-        }
-      }
-    }
+            "treasury:read": "Read treasury data",
+            "treasury:write": "Execute transfers",
+          },
+        },
+      },
+    },
   },
-  security: [{ oauth2: ['treasury:read', 'treasury:write'] }]
+  security: [{ oauth2: ["treasury:read", "treasury:write"] }],
 };
 ```
 
@@ -427,6 +441,7 @@ aws logs tail /ecs/uk-treasury-agent --follow
 ### Metrics
 
 **Monitor these metrics:**
+
 - A2A message volume
 - Message processing latency
 - Hedera transaction success rate
@@ -434,6 +449,7 @@ aws logs tail /ecs/uk-treasury-agent --follow
 - API costs (Anthropic)
 
 **CloudWatch Alarms:**
+
 ```bash
 # High error rate
 aws cloudwatch put-metric-alarm \
@@ -485,11 +501,13 @@ psql treasury_tasks < treasury_tasks_20260107.sql
 ### Failover Plan
 
 1. **Primary site failure**
+
    - DNS failover to backup site (Route 53 health checks)
    - Restore latest message backups
    - Resume operations within 15 minutes
 
 2. **Agent corruption**
+
    - Redeploy from Docker image
    - Restore message archive
    - Verify Hedera connectivity

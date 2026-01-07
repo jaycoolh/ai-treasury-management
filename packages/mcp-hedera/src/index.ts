@@ -4,19 +4,15 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import colors from "colors";
 const { green, red, yellow } = colors;
 
-import { LedgerId, Client } from "@hiero-ledger/sdk";
+import { LedgerId, Client } from "@hashgraph/sdk";
 import {
   AgentMode,
   Configuration,
   Context,
   coreAccountPlugin,
-  coreAccountPluginToolNames,
-  coreConsensusPlugin,
-  coreConsensusPluginToolNames,
   coreTokenPlugin,
-  coreTokenPluginToolNames,
-  coreQueriesPlugin,
-  coreQueriesPluginToolNames,
+  coreAccountQueryPlugin,
+  coreTokenQueryPlugin,
   HederaMCPToolkit,
 } from "hedera-agent-kit";
 
@@ -26,45 +22,12 @@ type Options = {
   ledgerId?: LedgerId;
 };
 
-// all the available tools
-const {
-  CREATE_FUNGIBLE_TOKEN_TOOL,
-  CREATE_NON_FUNGIBLE_TOKEN_TOOL,
-  AIRDROP_FUNGIBLE_TOKEN_TOOL,
-  MINT_NON_FUNGIBLE_TOKEN_TOOL,
-} = coreTokenPluginToolNames;
-
-const { TRANSFER_HBAR_TOOL } = coreAccountPluginToolNames;
-
-const { CREATE_TOPIC_TOOL, SUBMIT_TOPIC_MESSAGE_TOOL } =
-  coreConsensusPluginToolNames;
-
-const {
-  GET_HBAR_BALANCE_QUERY_TOOL,
-  GET_ACCOUNT_QUERY_TOOL,
-  GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,
-  GET_TOPIC_MESSAGES_QUERY_TOOL,
-} = coreQueriesPluginToolNames;
-
 const ACCEPTED_ARGS = [
   "agent-mode",
   "account-id",
   "public-key",
   "tools",
   "ledger-id",
-];
-const ACCEPTED_TOOLS = [
-  CREATE_FUNGIBLE_TOKEN_TOOL,
-  CREATE_NON_FUNGIBLE_TOKEN_TOOL,
-  AIRDROP_FUNGIBLE_TOKEN_TOOL,
-  MINT_NON_FUNGIBLE_TOKEN_TOOL,
-  TRANSFER_HBAR_TOOL,
-  CREATE_TOPIC_TOOL,
-  SUBMIT_TOPIC_MESSAGE_TOOL,
-  GET_HBAR_BALANCE_QUERY_TOOL,
-  GET_ACCOUNT_QUERY_TOOL,
-  GET_ACCOUNT_TOKEN_BALANCES_QUERY_TOOL,
-  GET_TOPIC_MESSAGES_QUERY_TOOL,
 ];
 
 export function parseArgs(args: string[]): Options {
@@ -106,20 +69,6 @@ export function parseArgs(args: string[]): Options {
     }
   });
 
-  // Validate tools against accepted enum values
-  options.tools?.forEach((tool: string) => {
-    if (tool == "all") {
-      return;
-    }
-    if (!ACCEPTED_TOOLS.includes(tool.trim() as any)) {
-      throw new Error(
-        `Invalid tool: ${tool}. Accepted tools are: ${ACCEPTED_TOOLS.join(
-          ", "
-        )}`
-      );
-    }
-  });
-
   return options;
 }
 
@@ -158,13 +107,13 @@ export async function main() {
   }
 
   const configuration: Configuration = {
-    tools: options.tools,
+    // tools: options.tools, // use all tools
     context: options.context,
     plugins: [
       coreTokenPlugin,
       coreAccountPlugin,
-      coreConsensusPlugin,
-      coreQueriesPlugin,
+      coreAccountQueryPlugin,
+      coreTokenQueryPlugin,
     ],
   };
 
@@ -179,8 +128,6 @@ export async function main() {
   console.error(green("✅ Hedera MCP Server running on stdio"));
 }
 
-if (require.main === module) {
-  main().catch((error) => {
-    handleError(error);
-  });
-}
+main().catch((error) => {
+  handleError(error);
+});

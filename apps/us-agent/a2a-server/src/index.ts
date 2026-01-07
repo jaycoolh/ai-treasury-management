@@ -1,10 +1,14 @@
-import express from 'express';
-import { DefaultRequestHandler } from '@a2a-js/sdk';
-import { InMemoryTaskStore } from '@a2a-js/sdk/server';
-import { jsonRpcHandler, agentCardHandler, UserBuilder } from '@a2a-js/sdk/express';
-import { IntelligentTreasuryExecutor } from './executor.js';
-import { config, validateConfig } from './config.js';
-import fs from 'fs';
+import express from "express";
+import { DefaultRequestHandler, InMemoryTaskStore } from "@a2a-js/sdk/server";
+import {
+  jsonRpcHandler,
+  agentCardHandler,
+  UserBuilder,
+} from "@a2a-js/sdk/server/express";
+import { IntelligentTreasuryExecutor } from "./executor.js";
+import { config, validateConfig } from "./config.js";
+import fs from "fs";
+import { AgentCard } from "@a2a-js/sdk";
 
 // Validate configuration
 try {
@@ -21,18 +25,27 @@ if (!fs.existsSync(config.messagesDir)) {
 }
 
 // A2A Agent Card
-const agentCard = {
-  name: 'US Treasury Agent',
-  version: '1.0.0',
-  protocolVersion: '0.3.0',
+const agentCard: AgentCard = {
+  name: "US Treasury Agent",
+  version: "1.0.0",
+  protocolVersion: "0.3.0",
   url: `http://localhost:${config.port}/a2a/jsonrpc`,
-  description: 'US business treasury agent - autonomous treasury operations and compliance',
+  description:
+    "US business treasury agent - autonomous treasury operations and compliance",
   additionalInterfaces: [
     {
       url: `http://localhost:${config.port}/a2a/jsonrpc`,
-      transport: 'JSONRPC',
+      transport: "JSONRPC",
     },
   ],
+  capabilities: {
+    streaming: false,
+    pushNotifications: false,
+    stateTransitionHistory: false,
+  },
+  defaultInputModes: [],
+  defaultOutputModes: [],
+  skills: [],
 };
 
 // Create Express app
@@ -46,9 +59,12 @@ const handler = new DefaultRequestHandler(
 );
 
 // Register A2A endpoints
-app.use('/.well-known/agent-card.json', agentCardHandler({ agentCardProvider: handler }));
 app.use(
-  '/a2a/jsonrpc',
+  "/.well-known/agent-card.json",
+  agentCardHandler({ agentCardProvider: handler })
+);
+app.use(
+  "/a2a/jsonrpc",
   jsonRpcHandler({
     requestHandler: handler,
     userBuilder: UserBuilder.noAuthentication, // For demo - use auth in production
@@ -56,9 +72,9 @@ app.use(
 );
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.json({
-    status: 'ok',
+    status: "ok",
     entity: config.entity,
     network: config.hederaNetwork,
     accountId: config.hederaAccountId,
@@ -67,29 +83,39 @@ app.get('/health', (req, res) => {
 
 // Start server
 app.listen(config.port, () => {
-  console.log('\n🇺🇸 ════════════════════════════════════════════════════════════');
-  console.log('   US TREASURY AGENT - A2A SERVER');
-  console.log('   ════════════════════════════════════════════════════════════');
+  console.log(
+    "\n🇺🇸 ════════════════════════════════════════════════════════════"
+  );
+  console.log("   US TREASURY AGENT - A2A SERVER");
+  console.log(
+    "   ════════════════════════════════════════════════════════════"
+  );
   console.log(`   Status:       Running`);
   console.log(`   Port:         ${config.port}`);
   console.log(`   Network:      ${config.hederaNetwork}`);
   console.log(`   Account:      ${config.hederaAccountId}`);
   console.log(`   Partner:      ${config.partnerAgentUrl}`);
-  console.log('   ────────────────────────────────────────────────────────────');
-  console.log(`   Agent Card:   http://localhost:${config.port}/.well-known/agent-card.json`);
+  console.log(
+    "   ────────────────────────────────────────────────────────────"
+  );
+  console.log(
+    `   Agent Card:   http://localhost:${config.port}/.well-known/agent-card.json`
+  );
   console.log(`   JSON-RPC:     http://localhost:${config.port}/a2a/jsonrpc`);
   console.log(`   Health:       http://localhost:${config.port}/health`);
-  console.log('   ════════════════════════════════════════════════════════════\n');
-  console.log('✅ Ready to receive messages from partner agent\n');
+  console.log(
+    "   ════════════════════════════════════════════════════════════\n"
+  );
+  console.log("✅ Ready to receive messages from partner agent\n");
 });
 
 // Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\n⚠️  Shutting down US Treasury Agent...');
+process.on("SIGINT", () => {
+  console.log("\n⚠️  Shutting down US Treasury Agent...");
   process.exit(0);
 });
 
-process.on('SIGTERM', () => {
-  console.log('\n⚠️  Shutting down US Treasury Agent...');
+process.on("SIGTERM", () => {
+  console.log("\n⚠️  Shutting down US Treasury Agent...");
   process.exit(0);
 });

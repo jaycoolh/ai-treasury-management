@@ -16,6 +16,7 @@
       "args": ["../../packages/mcp-a2a/dist/index.js"],
       "env": {
         "PARTNER_AGENT_URL": "${US_PARTNER_AGENT_URL}",
+        "PARTNER_HEDERA_ACCOUNT_ID": "${US_PARTNER_HEDERA_ACCOUNT_ID}",
         "MESSAGES_DIR": "./messages/inbox"
       }
     }

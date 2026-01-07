@@ -1,6 +1,10 @@
-import { AgentExecutor, ExecutionEventBus, RequestContext } from '@a2a-js/sdk';
-import { query } from '@anthropic-ai/claude-agent-sdk';
-import { config } from './config.js';
+import {
+  AgentExecutor,
+  ExecutionEventBus,
+  RequestContext,
+} from "@a2a-js/sdk/server";
+import { query } from "@anthropic-ai/claude-agent-sdk";
+import { config } from "./config.js";
 
 /**
  * Intelligent Treasury Executor
@@ -15,9 +19,9 @@ import { config } from './config.js';
 export class IntelligentTreasuryExecutor implements AgentExecutor {
   async execute(requestContext: RequestContext, eventBus: ExecutionEventBus) {
     const messageText = requestContext.userMessage.parts
-      .filter((p) => p.kind === 'text')
+      .filter((p) => p.kind === "text")
       .map((p) => (p as any).text)
-      .join(' ');
+      .join(" ");
 
     console.log(`\n📨 Received message from partner agent:`);
     console.log(`   Message: "${messageText}"`);
@@ -43,13 +47,12 @@ Use your treasury-management skill for workflow guidance.
 
 Generate a clear, professional response to send back to the US agent.`,
         options: {
-          allowedTools: ['Read', 'Write', 'Bash'],
           mcpServers: {
             hedera: {
-              command: 'node',
+              command: "node",
               args: [
-                '../../packages/mcp-hedera/dist/index.js',
-                '--ledger-id=' + config.hederaNetwork,
+                "../../packages/mcp-hedera/dist/index.js",
+                "--ledger-id=" + config.hederaNetwork,
               ],
               env: {
                 HEDERA_OPERATOR_ID: config.hederaAccountId,
@@ -57,19 +60,16 @@ Generate a clear, professional response to send back to the US agent.`,
               },
             },
             a2a: {
-              command: 'node',
-              args: ['../../packages/mcp-a2a/dist/index.js'],
+              command: "node",
+              args: ["../../packages/mcp-a2a/dist/index.js"],
               env: {
                 PARTNER_AGENT_URL: config.partnerAgentUrl,
                 MESSAGES_DIR: config.messagesDir,
               },
             },
           },
-          settingSources: ['project'], // Load Skills from .claude/skills/
-          systemPrompt: {
-            type: 'preset',
-            preset: 'claude_code',
-            append: `
+          settingSources: ["project"], // Load Skills from .claude/skills/
+          systemPrompt: `
 You are the UK Treasury Agent processing an incoming A2A message from the US Treasury Agent.
 
 Key context:
@@ -80,35 +80,53 @@ Key context:
 
 Respond professionally and execute any required operations autonomously.
 `,
-          },
-          permissionMode: 'bypassPermissions', // Autonomous operation
+          //           systemPrompt: {
+          //             type: "preset",
+          //             preset: "claude_code",
+          //             append: `
+          // You are the UK Treasury Agent processing an incoming A2A message from the US Treasury Agent.
+          //
+          // Key context:
+          // - Your entity: United Kingdom business
+          // - Your Hedera Account: ${config.hederaAccountId}
+          // - Partner: United States business
+          // - Network: ${config.hederaNetwork}
+          //
+          // Respond professionally and execute any required operations autonomously.
+          // `,
+          // }
+          permissionMode: "bypassPermissions", // Autonomous operation
           allowDangerouslySkipPermissions: true,
         },
       });
 
-      let finalResult = '';
+      let finalResult = "";
 
       // Process agent session
       for await (const message of agentSession) {
-        if (message.type === 'assistant') {
+        if (message.type === "assistant") {
           // Log assistant thinking
           const text = message.message.content
-            .filter((c: any) => c.type === 'text')
+            .filter((c: any) => c.type === "text")
             .map((c: any) => c.text)
-            .join('');
+            .join("");
 
           if (text) {
-            console.log(`💭 UK Agent: ${text.substring(0, 100)}...`);
+            // console.log(`💭 UK Agent: ${text.substring(0, 100)}...`);
+            console.log(`💭 UK Agent: ${text}`);
           }
         }
 
-        if (message.type === 'result') {
-          if (message.subtype === 'success') {
+        if (message.type === "result") {
+          if (message.subtype === "success") {
             finalResult = message.result;
             console.log(`✅ UK Agent completed successfully`);
-            console.log(`   Result: ${finalResult.substring(0, 150)}...`);
+            // console.log(`   Result: ${finalResult.substring(0, 150)}...`);
+            console.log(`   Result: ${finalResult}`);
           } else {
-            finalResult = `Error processing request: ${message.errors?.join(', ')}`;
+            finalResult = `Error processing request: ${message.errors?.join(
+              ", "
+            )}`;
             console.error(`❌ UK Agent failed: ${finalResult}`);
           }
         }
@@ -116,13 +134,13 @@ Respond professionally and execute any required operations autonomously.
 
       // Send final response back through A2A
       eventBus.publish({
-        kind: 'message',
+        kind: "message",
         messageId: crypto.randomUUID(),
-        role: 'agent',
+        role: "agent",
         parts: [
           {
-            kind: 'text',
-            text: finalResult || 'Request processed successfully.',
+            kind: "text",
+            text: finalResult || "Request processed successfully.",
           },
         ],
         contextId: requestContext.contextId,
@@ -131,12 +149,12 @@ Respond professionally and execute any required operations autonomously.
       console.error(`❌ Error processing message:`, error);
 
       eventBus.publish({
-        kind: 'message',
+        kind: "message",
         messageId: crypto.randomUUID(),
-        role: 'agent',
+        role: "agent",
         parts: [
           {
-            kind: 'text',
+            kind: "text",
             text: `Error processing request: ${error.message}`,
           },
         ],
@@ -148,6 +166,6 @@ Respond professionally and execute any required operations autonomously.
   }
 
   async cancelTask(): Promise<void> {
-    console.log('⚠️  Task cancellation requested');
+    console.log("⚠️  Task cancellation requested");
   }
 }
