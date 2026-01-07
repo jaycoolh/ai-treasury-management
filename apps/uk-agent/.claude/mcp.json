@@ -15,6 +15,7 @@
       "command": "node",
       "args": ["../../packages/mcp-a2a/dist/index.js"],
       "env": {
+        "AGENT_ID": "uk-treasury-agent",
         "PARTNER_AGENT_URL": "${UK_PARTNER_AGENT_URL}",
         "PARTNER_HEDERA_ACCOUNT_ID": "${UK_PARTNER_HEDERA_ACCOUNT_ID}",
         "MESSAGES_DIR": "./messages/inbox"

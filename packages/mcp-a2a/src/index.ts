@@ -17,8 +17,10 @@ const PARTNER_AGENT_URL =
   process.env.PARTNER_AGENT_URL || "http://localhost:5001";
 const PARTNER_HEDERA_ACCOUNT_ID = process.env.PARTNER_HEDERA_ACCOUNT_ID || "";
 const MESSAGES_DIR = process.env.MESSAGES_DIR || "./messages/inbox";
+const AGENT_ID = process.env.AGENT_ID || "treasury-agent";
 
 console.error("🔗 A2A MCP Server starting...");
+console.error(`   Agent ID: ${AGENT_ID}`);
 console.error(`   Partner URL: ${PARTNER_AGENT_URL}`);
 console.error(`   Partner Account: ${PARTNER_HEDERA_ACCOUNT_ID || "Not configured"}`);
 console.error(`   Messages Dir: ${MESSAGES_DIR}`);
@@ -62,6 +64,9 @@ server.registerTool(
           role: "user",
           parts: [{ kind: "text", text: message }],
           kind: "message",
+          metadata: {
+            sender: AGENT_ID,
+          },
         },
       });
 
@@ -115,7 +120,7 @@ server.registerTool(
 server.registerTool(
   "check_partner_messages",
   {
-    description: "Check for new messages from the partner agent",
+    description: "Check for new messages from partner agent or AR/AP system. Check metadata.sender to distinguish: 'arp-system' for internal events, partner agent ID for agent messages.",
     inputSchema: {
       mark_as_read: z
         .boolean()

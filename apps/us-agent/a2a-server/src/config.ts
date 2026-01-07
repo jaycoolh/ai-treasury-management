@@ -12,6 +12,7 @@ export const config = {
   entity: "US" as const,
   port: parseInt(process.env.US_A2A_PORT || "5001", 10),
   partnerAgentUrl: process.env.US_PARTNER_AGENT_URL || "http://localhost:4000",
+  partnerHederaAccountId: process.env.US_PARTNER_HEDERA_ACCOUNT_ID || "",
   hederaAccountId: process.env.US_HEDERA_ACCOUNT_ID || "",
   hederaPrivateKey: process.env.US_HEDERA_PRIVATE_KEY || "",
   hederaNetwork: (process.env.HEDERA_NETWORK || "testnet") as

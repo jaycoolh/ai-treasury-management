@@ -8,6 +8,10 @@ export interface A2AMessage {
   contextId: string;
   taskId: string;
   message: string;
+  metadata?: {
+    sender?: string;
+    [key: string]: any;
+  };
   raw: any;
 }
 

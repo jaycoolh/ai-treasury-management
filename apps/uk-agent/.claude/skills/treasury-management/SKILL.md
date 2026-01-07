@@ -55,6 +55,82 @@ Before making treasury decisions, ALWAYS gather complete context:
 7. Response: "Current liquidity 175k HBAR. Watch Feb 12: projected low of 57k HBAR due to 55k AP payment"
 ```
 
+## Message Processing by Sender
+
+When checking messages with `check_partner_messages`, **ALWAYS check `metadata.sender`** to distinguish message source:
+
+### 1. AR/AP System Events (`metadata.sender === "arp-system"`)
+
+**These are internal notifications from the accounting system:**
+
+✅ **DO:**
+- Process and reason about the event
+- Read `arp://ledger/summary` and `arp://cashflow/forecast` to analyze impact
+- Make autonomous decisions based on analysis
+- If liquidity concern identified, START NEW conversation with partner via `send_message_to_partner`
+
+❌ **DO NOT:**
+- Reply to the AR/AP system event itself
+- Apply conversation turn limits to system events
+- Treat as partner communication
+
+**Example Flow:**
+```
+1. Receive: metadata.sender = "arp-system"
+   "ALERT: AP-UK-003 Legal 110 HBAR due Feb 8"
+
+2. Analyze internally:
+   - Check arp://ledger/summary
+   - Check arp://cashflow/forecast
+   - Decision: "Need 150 HBAR from partner"
+
+3. Initiate NEW conversation with partner:
+   send_message_to_partner("Requesting 150 HBAR for working capital...")
+   (This message will have metadata.sender = "uk-treasury-agent")
+
+4. Partner responds
+
+5. Conversation complete (2-3 turns with partner)
+```
+
+### 2. Partner Agent Messages (`metadata.sender === "us-treasury-agent"`)
+
+**These are messages from your partner treasury agent:**
+
+✅ **DO:**
+- Process and reason about the request
+- Read AR/AP context if needed for decision-making
+- Respond if appropriate
+- Apply conversation management rules (2-3 turn limit)
+- Check for closure signals before replying
+
+❌ **DO NOT:**
+- Send unnecessary acknowledgments ("thanks", "you're welcome")
+- Extend conversations beyond 2-3 turns
+- Reply to closure signals
+
+**Example Flow:**
+```
+1. Receive: metadata.sender = "us-treasury-agent"
+   "Requesting 200 HBAR for vendor payments due Feb 9"
+
+2. Analyze:
+   - Check own cash position: 315 HBAR available
+   - Check forecast: can afford to send 200 HBAR
+
+3. Respond:
+   "Confirmed. Transferring 200 HBAR to 0.0.yyyyy. TX: 0.0.12345@..."
+
+4. [CONVERSATION ENDS - Do not reply if partner sends "Acknowledged"]
+```
+
+### 3. Missing Metadata (Legacy/Default)
+
+If `metadata.sender` is undefined or missing:
+- **Default assumption:** Treat as partner agent message
+- Apply conversation management rules
+- This ensures backwards compatibility
+
 ## Intercompany Transfer Workflow
 
 When transferring funds between UK and US entities:

@@ -27,7 +27,12 @@ export class IntelligentTreasuryExecutor implements AgentExecutor {
       .map((p) => (p as any).text)
       .join(" ");
 
-    console.log(`\n[${this.getTimestamp()}] 📨 Received message from partner agent:`);
+    // Extract metadata to identify message source
+    const metadata = (requestContext.userMessage as any).metadata || {};
+    const sender = metadata.sender || "unknown";
+
+    console.log(`\n[${this.getTimestamp()}] 📨 Received message:`);
+    console.log(`   Sender: ${sender}`);
     console.log(`   Message: "${messageText}"`);
     console.log(`   Context ID: ${requestContext.contextId}`);
     console.log(`   Task ID: ${requestContext.taskId}`);
@@ -37,19 +42,19 @@ export class IntelligentTreasuryExecutor implements AgentExecutor {
       const agentSession = query({
         prompt: `You are the UK Treasury Agent operating autonomously.
 
-You received this message from the US Treasury Agent:
+You received an A2A message with the following details:
 
+Message metadata:
+- sender: "${sender}"
+
+Message content:
 "${messageText}"
 
-Process this message according to UK treasury protocols:
-1. Understand what the partner agent is requesting or communicating
-2. Check compliance requirements using your uk-compliance skill
-3. If a transfer is being requested or confirmed, use appropriate Hedera MCP tools
-4. Respond professionally to the partner agent
+IMPORTANT: Check the metadata.sender field to determine message source:
+- If metadata.sender is "arp-system": This is an internal AR/AP system event. Analyze the event, check your AR/AP data using arp:// resources, and decide if you need to initiate a NEW conversation with the partner agent.
+- If metadata.sender is "us-treasury-agent": This is a message from your partner agent. Process the request and respond appropriately within 2-3 turns following conversation management rules.
 
-Use your treasury-management skill for workflow guidance.
-
-Generate a clear, professional response to send back to the US agent.`,
+Process this message according to UK treasury protocols and your treasury-management skill guidance.`,
         options: {
           mcpServers: {
             hedera: {
@@ -67,8 +72,17 @@ Generate a clear, professional response to send back to the US agent.`,
               command: "node",
               args: ["../../packages/mcp-a2a/dist/index.js"],
               env: {
+                AGENT_ID: "uk-treasury-agent",
                 PARTNER_AGENT_URL: config.partnerAgentUrl,
+                PARTNER_HEDERA_ACCOUNT_ID: config.partnerHederaAccountId || "",
                 MESSAGES_DIR: config.messagesDir,
+              },
+            },
+            arp: {
+              command: "node",
+              args: ["../../packages/mcp-arp/dist/index.js"],
+              env: {
+                ARP_DATA_DIR: process.env.UK_ARP_DATA_DIR || "./data",
               },
             },
           },
