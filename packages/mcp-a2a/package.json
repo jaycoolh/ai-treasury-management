@@ -1,0 +1,24 @@
+{
+  "name": "@treasury/mcp-a2a",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "mcp-a2a": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@a2a-js/sdk": "^0.3.7",
+    "@treasury/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}

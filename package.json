@@ -1,0 +1,26 @@
+{
+  "name": "treasury-agent-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Autonomous treasury management with Claude Code agents",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev:uk": "pnpm --filter uk-agent dev",
+    "dev:us": "pnpm --filter us-agent dev",
+    "start:uk": "./scripts/start-uk-agent.sh",
+    "start:us": "./scripts/start-us-agent.sh",
+    "setup": "./scripts/setup.sh",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "tsx": "^4.7.0",
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

@@ -86,6 +86,7 @@ vim apps/us-agent/.env.us
 ```
 
 Required variables:
+
 - `UK_HEDERA_ACCOUNT_ID` / `US_HEDERA_ACCOUNT_ID`
 - `UK_HEDERA_PRIVATE_KEY` / `US_HEDERA_PRIVATE_KEY`
 - `ANTHROPIC_API_KEY`
@@ -227,6 +228,7 @@ For production deployment:
 ### Agent not starting
 
 Check that:
+
 - Environment variables are set correctly
 - Hedera credentials are valid
 - Ports 4000 and 5000 are not in use
@@ -235,6 +237,7 @@ Check that:
 ### MCP server not connecting
 
 Verify:
+
 - MCP server paths in `.claude/mcp.json` are correct
 - Packages are built (`pnpm run build`)
 - Environment variables are accessible to MCP servers
@@ -242,6 +245,7 @@ Verify:
 ### Messages not being received
 
 Ensure:
+
 - Both A2A servers are running
 - Partner agent URLs are correct in env files
 - Message directories exist and are writable
@@ -259,4 +263,3 @@ MIT
 ## Contributing
 
 Contributions welcome! Please read CONTRIBUTING.md first.
-# ai-treasury-management

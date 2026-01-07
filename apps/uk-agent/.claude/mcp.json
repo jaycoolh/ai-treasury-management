@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "hedera": {
+      "command": "node",
+      "args": [
+        "../../packages/mcp-hedera/dist/index.js",
+        "--ledger-id=testnet"
+      ],
+      "env": {
+        "HEDERA_OPERATOR_ID": "${UK_HEDERA_ACCOUNT_ID}",
+        "HEDERA_OPERATOR_KEY": "${UK_HEDERA_PRIVATE_KEY}"
+      }
+    },
+    "a2a": {
+      "command": "node",
+      "args": ["../../packages/mcp-a2a/dist/index.js"],
+      "env": {
+        "PARTNER_AGENT_URL": "${UK_PARTNER_AGENT_URL}",
+        "MESSAGES_DIR": "./messages/inbox"
+      }
+    }
+  }
+}

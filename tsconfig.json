@@ -1,0 +1,12 @@
+{
+  "extends": "./packages/shared-config/tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@treasury/shared-types": ["./packages/shared-types/src"],
+      "@treasury/shared-skills": ["./packages/shared-skills"],
+      "@treasury/mcp-a2a": ["./packages/mcp-a2a/src"],
+      "@treasury/mcp-hedera": ["./packages/mcp-hedera/src"]
+    }
+  }
+}
