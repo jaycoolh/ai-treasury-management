@@ -131,6 +131,57 @@ If partner agent doesn't respond:
 2. Retry message once
 3. If still no response, alert user and await manual intervention
 
+## Cash Sweeping
+
+Sweeping moves excess cash to a designated sweep account when balance exceeds operating needs.
+
+### When to Evaluate Sweeping
+
+Evaluate sweeping on **any incoming financial event**:
+- AP invoice notifications
+- AR payment receipts
+- Balance updates
+- Partner transfer completions
+
+### Sweep Decision Process
+
+1. **Check current HBAR balance**
+   - Use Hedera MCP `GET_HBAR_BALANCE_QUERY_TOOL`
+
+2. **Check outstanding obligations**
+   - Query AR/AP for upcoming payables
+   - Consider any pending transfers
+
+3. **Calculate available surplus**
+   - Surplus = Current Balance - Operating Buffer - Upcoming Obligations
+   - Operating Buffer: 500 HBAR (minimum to maintain for operations)
+
+4. **Execute sweep if surplus exists**
+   - If surplus > 0, transfer surplus to sweep account
+   - Use Hedera MCP `TRANSFER_HBAR_TOOL`
+   - Sweep account is configured per entity (see environment config)
+   - Include memo: "SWEEP: [DATE] excess funds"
+
+### Sweep Configuration
+
+Each entity has a designated sweep account configured via environment:
+- UK: `UK_SWEEP_ACCOUNT_ID`
+- US: `US_SWEEP_ACCOUNT_ID`
+
+### Sweep Message Template
+
+```
+Executing cash sweep: [AMOUNT] HBAR to sweep account [ACCOUNT_ID].
+Reason: Balance [CURRENT] exceeds operating buffer [BUFFER] + obligations [OBLIGATIONS].
+Surplus calculated: [SURPLUS] HBAR.
+```
+
+### Post-Sweep Actions
+
+1. Confirm transaction on Hedera
+2. Log sweep details for audit
+3. Notify partner if relevant to consolidated position
+
 ## Audit Trail
 
 All transactions must record:
