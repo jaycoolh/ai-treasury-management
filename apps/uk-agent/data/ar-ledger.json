@@ -48,5 +48,18 @@
     "status": "overdue",
     "agingBucket": "60",
     "description": "Professional Services - November"
+  },
+  {
+    "invoiceId": "AR-UK-IC-001",
+    "customer": "US Treasury (Intercompany)",
+    "amount": 1000,
+    "currency": "HBAR",
+    "dueDate": "2026-03-11",
+    "issuedDate": "2026-02-09",
+    "status": "outstanding",
+    "agingBucket": "current",
+    "description": "Intercompany Loan - 30-Day Term (Emergency Liquidity Support)",
+    "terms": "0% interest, single lump-sum repayment, early repayment permitted",
+    "counterpartyAccount": "0.0.5115069"
   }
 ]

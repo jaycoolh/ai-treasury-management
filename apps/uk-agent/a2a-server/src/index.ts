@@ -7,6 +7,12 @@ import {
 } from "@a2a-js/sdk/server/express";
 import { IntelligentTreasuryExecutor } from "./executor.js";
 import { config, validateConfig } from "./config.js";
+import {
+  addSseClient,
+  getEventStats,
+  getRecentEvents,
+  removeSseClient,
+} from "./events.js";
 import fs from "fs";
 import { AgentCard } from "@a2a-js/sdk";
 
@@ -51,6 +57,28 @@ const agentCard: AgentCard = {
 // Create Express app
 const app = express();
 
+const uiOrigins = (process.env.UI_ORIGINS || "http://localhost:3000")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && uiOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Vary", "Origin");
+  }
+
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+
+  next();
+});
+
 // Create request handler with intelligent executor
 const handler = new DefaultRequestHandler(
   agentCard,
@@ -78,6 +106,49 @@ app.get("/health", (req, res) => {
     entity: config.entity,
     network: config.hederaNetwork,
     accountId: config.hederaAccountId,
+  });
+});
+
+app.get("/events/recent", (req, res) => {
+  const limit = Math.min(
+    Number.parseInt(req.query.limit as string, 10) || 200,
+    500
+  );
+  res.json(getRecentEvents(limit));
+});
+
+app.get("/events/stats", (req, res) => {
+  res.json(getEventStats());
+});
+
+// SSE stream for live UI updates.
+app.get("/events", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+
+  res.write(
+    `event: connected\ndata: ${JSON.stringify({
+      status: "ok",
+      agent: config.entity,
+    })}\n\n`
+  );
+
+  const recent = getRecentEvents(50);
+  if (recent.length) {
+    res.write(`event: bootstrap\ndata: ${JSON.stringify(recent)}\n\n`);
+  }
+
+  addSseClient(res);
+
+  const ping = setInterval(() => {
+    res.write(`event: ping\ndata: ${Date.now()}\n\n`);
+  }, 25000);
+
+  req.on("close", () => {
+    clearInterval(ping);
+    removeSseClient(res);
   });
 });
 

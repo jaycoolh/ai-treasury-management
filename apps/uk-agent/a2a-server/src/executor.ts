@@ -5,6 +5,7 @@ import {
 } from "@a2a-js/sdk/server";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { config } from "./config.js";
+import { recordEvent } from "./events.js";
 
 /**
  * Intelligent Treasury Executor
@@ -30,12 +31,30 @@ export class IntelligentTreasuryExecutor implements AgentExecutor {
     // Extract metadata to identify message source
     const metadata = (requestContext.userMessage as any).metadata || {};
     const sender = metadata.sender || "unknown";
+    const contextId = requestContext.contextId;
+    const taskId = requestContext.taskId;
 
+    const receivedLine = `[${this.getTimestamp()}] Received message from ${sender}: "${messageText}"`;
     console.log(`\n[${this.getTimestamp()}] 📨 Received message:`);
     console.log(`   Sender: ${sender}`);
     console.log(`   Message: "${messageText}"`);
-    console.log(`   Context ID: ${requestContext.contextId}`);
-    console.log(`   Task ID: ${requestContext.taskId}`);
+    console.log(`   Context ID: ${contextId}`);
+    console.log(`   Task ID: ${taskId}`);
+
+    recordEvent({
+      kind: "message_received",
+      contextId,
+      taskId,
+      sender,
+      text: messageText,
+    });
+    recordEvent({
+      kind: "log",
+      contextId,
+      taskId,
+      sender,
+      text: receivedLine,
+    });
 
     try {
       // Invoke Claude Agent SDK to process the message
@@ -86,6 +105,7 @@ Process this message according to UK treasury protocols and your treasury-manage
               },
             },
           },
+          model: "claude-sonnet-4-5-20250929",
           settingSources: ["project"], // Load Skills from .claude/skills/
           systemPrompt: `
 You are the UK Treasury Agent processing an incoming A2A message from the US Treasury Agent.
@@ -134,26 +154,119 @@ Respond professionally and execute any required operations autonomously.
             console.log(`[${this.getTimestamp()}] 💭 UK Agent: ${text}`);
           }
 
+          if (text) {
+            recordEvent({
+              kind: "log",
+              contextId,
+              taskId,
+              sender,
+              text: `[${this.getTimestamp()}] Agent update: ${text}`,
+            });
+            recordEvent({
+              kind: "assistant_update",
+              contextId,
+              taskId,
+              sender,
+              text,
+            });
+          }
+
           // Log MCP tool interactions
-          const toolUses = message.message.content.filter((c: any) => c.type === "tool_use");
+          const toolUses = message.message.content.filter(
+            (c: any) => c.type === "tool_use",
+          );
           for (const toolUse of toolUses) {
-            console.log(`[${this.getTimestamp()}] 🔧 UK Agent Tool Use: ${toolUse.name}`);
+            console.log(
+              `[${this.getTimestamp()}] 🔧 UK Agent Tool Use: ${toolUse.name}`,
+            );
             console.log(`   Tool ID: ${toolUse.id}`);
             console.log(`   Input: ${JSON.stringify(toolUse.input, null, 2)}`);
+
+            recordEvent({
+              kind: "tool_use",
+              contextId,
+              taskId,
+              sender,
+              text: toolUse.name,
+              data: {
+                tool: toolUse.name,
+                input: toolUse.input,
+              },
+            });
+            if (
+              typeof toolUse.name === "string" &&
+              toolUse.name.includes("send_message_to_partner")
+            ) {
+              recordEvent({
+                kind: "partner_message",
+                contextId,
+                taskId,
+                sender,
+                text:
+                  typeof toolUse.input?.message === "string"
+                    ? toolUse.input.message
+                    : "Message sent to partner.",
+              });
+            }
+            recordEvent({
+              kind: "log",
+              contextId,
+              taskId,
+              sender,
+              text: `[${this.getTimestamp()}] Tool use: ${toolUse.name} input ${JSON.stringify(
+                toolUse.input,
+              )}`,
+            });
           }
         }
 
         if (message.type === "result") {
           if (message.subtype === "success") {
             finalResult = message.result;
-            console.log(`[${this.getTimestamp()}] ✅ UK Agent completed successfully`);
+            console.log(
+              `[${this.getTimestamp()}] ✅ UK Agent completed successfully`,
+            );
             // console.log(`   Result: ${finalResult.substring(0, 150)}...`);
             console.log(`   Result: ${finalResult}`);
+
+            recordEvent({
+              kind: "result",
+              contextId,
+              taskId,
+              sender,
+              text: finalResult,
+              data: { status: "success" },
+            });
+            recordEvent({
+              kind: "log",
+              contextId,
+              taskId,
+              sender,
+              text: `[${this.getTimestamp()}] Agent completed successfully.`,
+            });
           } else {
             finalResult = `Error processing request: ${message.errors?.join(
-              ", "
+              ", ",
             )}`;
-            console.error(`[${this.getTimestamp()}] ❌ UK Agent failed: ${finalResult}`);
+            console.error(
+              `[${this.getTimestamp()}] ❌ UK Agent failed: ${finalResult}`,
+            );
+
+            recordEvent({
+              kind: "error",
+              contextId,
+              taskId,
+              sender,
+              text: finalResult,
+              data: { status: "error" },
+            });
+            recordEvent({
+              kind: "log",
+              contextId,
+              taskId,
+              sender,
+              text: `[${this.getTimestamp()}] Agent failed: ${finalResult}`,
+            });
           }
         }
       }
@@ -169,10 +282,44 @@ Respond professionally and execute any required operations autonomously.
             text: finalResult || "Request processed successfully.",
           },
         ],
-        contextId: requestContext.contextId,
+        contextId,
+      });
+
+      recordEvent({
+        kind: "response_sent",
+        contextId,
+        taskId,
+        sender,
+        text: finalResult || "Request processed successfully.",
+      });
+      recordEvent({
+        kind: "log",
+        contextId,
+        taskId,
+        sender,
+        text: `[${this.getTimestamp()}] Response sent to partner.`,
       });
     } catch (error: any) {
-      console.error(`[${this.getTimestamp()}] ❌ Error processing message:`, error);
+      console.error(
+        `[${this.getTimestamp()}] ❌ Error processing message:`,
+        error,
+      );
+
+      recordEvent({
+        kind: "error",
+        contextId,
+        taskId,
+        sender,
+        text: `Error processing request: ${error.message}`,
+        data: { status: "exception" },
+      });
+      recordEvent({
+        kind: "log",
+        contextId,
+        taskId,
+        sender,
+        text: `[${this.getTimestamp()}] Exception: ${error.message}`,
+      });
 
       eventBus.publish({
         kind: "message",
@@ -184,7 +331,7 @@ Respond professionally and execute any required operations autonomously.
             text: `Error processing request: ${error.message}`,
           },
         ],
-        contextId: requestContext.contextId,
+        contextId,
       });
     }
 

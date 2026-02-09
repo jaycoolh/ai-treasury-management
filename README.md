@@ -103,7 +103,15 @@ pnpm start:uk
 pnpm start:us
 ```
 
-### 4. Interact with Agents
+### 4. Start Demo UI (Optional)
+
+```bash
+pnpm --filter demo-ui dev
+```
+
+Open `http://localhost:3000` to view the UI.
+
+### 5. Interact with Agents
 
 Using Claude Code CLI:
 
